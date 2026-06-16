@@ -7,7 +7,7 @@
 #                                                                   # access + `hf auth login`
 #   /opt/homebrew/bin/python3.12 -m venv .venv-sam3
 #   .venv-sam3/bin/pip install "numpy<2" torch torchvision Pillow "opencv-python<4.11" \
-#       "matplotlib<3.11" einops pycocotools psutil
+#       "matplotlib<3.11" einops pycocotools psutil fastapi "uvicorn[standard]"
 #   .venv-sam3/bin/pip install -e ../sam3
 #
 # Mac/CPU note: ../sam3 carries 5 vendored patches so it runs on Apple Silicon
@@ -21,4 +21,6 @@ torchvision
 Pillow
 opencv-python<4.11
 matplotlib<3.11          # SAM3_new.mask_review interactive cleanup UI
+fastapi                  # SAM3_new.review_app browser-based cleanup UI
+uvicorn[standard]        #   (ASGI server for the review app)
 # SAM 3 itself: pip install -e ../sam3  (facebookresearch/sam3; gated weights on HuggingFace)

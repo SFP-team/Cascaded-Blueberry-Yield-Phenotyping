@@ -27,7 +27,6 @@ import numpy as np
 from .io_utils import load_upright
 
 MASKS_SUBDIR = "masks"
-PREVIEW_SUBDIR = "review_edits"
 
 
 # --------------------------------------------------------------------------- core
@@ -108,20 +107,21 @@ def open_separate(mask: np.ndarray, seed_xy, radius: int) -> np.ndarray:
 
 
 def save(output_dir: Path, stem: str, mask: np.ndarray, rgb=None) -> dict:
-    """Overwrite the persisted mask, mark the meta edited, and write a preview PNG."""
+    """Overwrite the persisted mask in place and regenerate the pipeline's derived
+    images (overlay / preview / binary mask) from the corrected mask, so the whole
+    output reflects the edit — exactly as if the pipeline had produced it. No
+    separate copy is kept."""
     rgb_, _, meta, mask_path, meta_path = load(output_dir, stem)
     rgb = rgb if rgb is not None else rgb_
-    np.save(mask_path, mask.astype(bool))
+    mask = mask.astype(bool)
+    np.save(mask_path, mask)
     meta["manually_edited"] = True
     meta["edited_mask_area"] = int(mask.sum())
     if meta_path.is_file() or meta:
         meta_path.write_text(json.dumps(meta, indent=2))
     if rgb is not None:
-        prev_dir = Path(output_dir) / PREVIEW_SUBDIR
-        prev_dir.mkdir(parents=True, exist_ok=True)
-        vis = rgb.astype(np.float32)
-        vis[mask] = vis[mask] * 0.45 + np.array([0, 200, 0], np.float32) * 0.55
-        cv2.imwrite(str(prev_dir / f"{stem}.edited.png"), cv2.cvtColor(vis.astype(np.uint8), cv2.COLOR_RGB2BGR))
+        from .overlay import regenerate_outputs
+        regenerate_outputs(output_dir, stem, rgb, mask, meta)
     return meta
 
 

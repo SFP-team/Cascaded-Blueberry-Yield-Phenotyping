@@ -83,3 +83,45 @@ def render_binary_mask(mask: np.ndarray, out_path: Path) -> None:
     """Write a plain black/white PNG of the mask."""
     out_path.parent.mkdir(parents=True, exist_ok=True)
     cv2.imwrite(str(out_path), np.asarray(mask, dtype=np.uint8) * 255)
+
+
+# --------------------------------------------------------------------- in-place regen
+
+# The subdir / filename layout the CLI writes (keep in sync with cli.py).
+OVERLAY_SUBDIR = "overlays"
+MASK_PREVIEW_SUBDIR = "mask_previews"
+BINARY_MASK_SUBDIR = "mask_pngs"
+
+
+def _result_from_meta(mask: np.ndarray, meta: dict) -> PlantResult:
+    """Reconstruct a minimal PlantResult (enough for the renderers) from an edited
+    mask plus the persisted meta — used when a hand-corrected mask is re-rendered."""
+    mask = np.asarray(mask, dtype=bool)
+    h, w = mask.shape
+    seed = tuple(int(v) for v in (meta.get("seed_xy") or (w // 2, h // 2)))
+    return PlantResult(
+        image_name=meta.get("image_name", ""),
+        height=h, width=w,
+        mask=mask,
+        core=np.zeros((h, w), dtype=bool),
+        seed_xy=seed,
+        seed_is_fallback=bool(meta.get("seed_is_fallback", False)),
+        no_plant=not mask.any(),
+        pred_iou=float(meta.get("pred_iou") or 0.0),
+        agreement=float(meta.get("agreement") or 0.0),
+        mask_confidence=float(meta.get("mask_confidence") or 0.0),
+        seed_points=np.array([seed], dtype=float) if mask.any() else None,
+        seed_labels=np.array([1]) if mask.any() else None,
+        fallback_reason=meta.get("fallback_reason"),
+    )
+
+
+def regenerate_outputs(output_dir, stem: str, rgb: np.ndarray, mask: np.ndarray, meta: dict) -> None:
+    """Overwrite the pipeline's derived images for `stem` in place from an edited
+    mask: overlays/<stem>.overlay.png, mask_previews/<stem>.mask_preview.png and
+    mask_pngs/<stem>.mask.png. No separate copy is kept."""
+    out = Path(output_dir)
+    result = _result_from_meta(mask, meta)
+    render_overlay(rgb, result, out / OVERLAY_SUBDIR / f"{stem}.overlay.png")
+    render_mask_preview(rgb, result, out / MASK_PREVIEW_SUBDIR / f"{stem}.mask_preview.png")
+    render_binary_mask(mask, out / BINARY_MASK_SUBDIR / f"{stem}.mask.png")

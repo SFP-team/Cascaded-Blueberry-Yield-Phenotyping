@@ -71,6 +71,7 @@ git clone https://github.com/facebookresearch/sam3 ../sam3
 python3.12 -m venv .venv-sam3
 .venv-sam3/bin/pip install "numpy<2" torch torchvision Pillow "opencv-python<4.11" \
     "matplotlib<3.11" einops pycocotools psutil
+.venv-sam3/bin/pip install fastapi "uvicorn[standard]"   # for the browser review app
 .venv-sam3/bin/pip install -e ../sam3
 ```
 
@@ -108,7 +109,40 @@ Useful flags: `--text-prompt`, `--fallback-prompts`, `--sam3-confidence-thresh`,
 
 ## Manual mask cleanup
 
-For the occasional frame the automatic cleanup can't resolve, an interactive editor is included:
+For the occasional frame the automatic cleanup can't resolve, two editors are included — a
+browser app for non-programmers, and a keyboard-driven matplotlib editor. Both operate on the
+same persisted masks and save in place, so all downstream use consumes the corrected mask.
+
+### Browser app (recommended — no terminal)
+
+Double-click **`Launch Mask Review.command`** in Finder. It starts a small local server and opens
+the review page in your browser automatically (nothing leaves the machine — it binds to
+`127.0.0.1` only). To run it by hand, or to review a specific output folder:
+
+```bash
+.venv-sam3/bin/python -m SAM3_new.review_app <output_dir>   # e.g. output_Testimages
+```
+
+A sidebar lists every image with a status dot (🟢 saved / 🔴 not yet reviewed) and a thumbnail.
+Pick an image, then:
+
+- **Click-delete** (default) — click a stray green blob to remove that connected component.
+- **Brush** — drag over a background plant that is *merged* into the center plant (use the size
+  slider, or `[` / `]`).
+- **Keep seed** keeps only the stem plant; **Snap-separate** severs thin bridges.
+- **Undo** / **Reset**, then **Save**. **Next** moves on.
+
+**Save replaces the originals in place.** It overwrites `masks/<stem>.mask.npy` and regenerates the
+pipeline's derived images for that image — `overlays/<stem>.overlay.png`,
+`mask_previews/<stem>.mask_preview.png` and `mask_pngs/<stem>.mask.png` — from the corrected mask,
+using the same renderers as the pipeline. The output looks exactly as if the pipeline had produced
+the corrected mask; no separate copy is kept. (It overwrites in place — there is no backup of the
+pre-edit mask, so the in-session Undo/Reset are your safety net before Save.)
+
+Keyboard shortcuts mirror the buttons: `c`/`b` mode, `k` keep-seed, `o` snap-separate, `u` undo,
+`r` reset, `s` save, `n` next.
+
+### Matplotlib editor (terminal)
 
 ```bash
 .venv-sam3/bin/python -m SAM3_new.mask_review <output_dir> [--stem W24160905]
