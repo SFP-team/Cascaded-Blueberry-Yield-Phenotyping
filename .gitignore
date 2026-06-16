@@ -1,0 +1,36 @@
+# --- Python / envs ---
+.venv/
+.venv-sam3/
+__pycache__/
+*.pyc
+*.pyo
+.ipynb_checkpoints/
+
+# --- model weights (gated Meta SAM 3 weights live in the HF cache; never commit) ---
+checkpoints/
+*.pt
+*.pth
+*.safetensors
+
+# --- input data (large; not redistributed here) ---
+Testimages/
+new_test/
+
+# --- pipeline outputs (regenerate locally) ---
+output/
+output_*/
+outputs/
+*.mask.npy
+*.npy
+
+# --- local tooling / agent + editor configs ---
+.claude/
+.codex/
+.kiro/
+.agents/
+.vscode/
+.idea/
+.DS_Store
+
+# --- misc large/binary artifacts ---
+*.pptx

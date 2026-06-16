@@ -1,0 +1,24 @@
+# SAM3_new — standalone SAM 3 center-plant segmentation.
+# Runs in an isolated Python 3.12 venv (.venv-sam3) because SAM 3 pins numpy<2
+# (and numpy<2 has no Python 3.13 wheels).
+#
+# One-time setup:
+#   git clone https://github.com/facebookresearch/sam3 ../sam3     # gated weights: request
+#                                                                   # access + `hf auth login`
+#   /opt/homebrew/bin/python3.12 -m venv .venv-sam3
+#   .venv-sam3/bin/pip install "numpy<2" torch torchvision Pillow "opencv-python<4.11" \
+#       "matplotlib<3.11" einops pycocotools psutil
+#   .venv-sam3/bin/pip install -e ../sam3
+#
+# Mac/CPU note: ../sam3 carries 5 vendored patches so it runs on Apple Silicon
+#   (edt Triton->cv2 fallback; device-aware position_encoding/decoder/geometry_encoders;
+#   perflib bf16->native dtype). Re-apply after any `git pull` in ../sam3.
+#   Use HF_HUB_DISABLE_XET=1 when the checkpoint download stalls.
+
+numpy<2
+torch
+torchvision
+Pillow
+opencv-python<4.11
+matplotlib<3.11          # SAM3_new.mask_review interactive cleanup UI
+# SAM 3 itself: pip install -e ../sam3  (facebookresearch/sam3; gated weights on HuggingFace)
