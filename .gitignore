@@ -1,6 +1,7 @@
 # --- Python / envs ---
 .venv/
 .venv-sam3/
+.venv-yolo/
 __pycache__/
 *.pyc
 *.pyo
@@ -34,3 +35,15 @@ outputs/
 
 # --- misc large/binary artifacts ---
 *.pptx
+
+# --- 3-folder reorg (2026-06): datasets, models, bulk outputs (keep curated examples/) ---
+# Detection: datasets, roboflow exports, model weights, run outputs
+BlueberryDetection/datasets/
+BlueberryDetection/roboflow_uploads/
+BlueberryDetection/weights/
+BlueberryDetection/runs/
+# Segmentation: bulk results (masks/overlays regenerate locally); examples/ kept
+Segmentation/results/
+# Plant architecture: keep report CSV/JSON, drop the per-plant figure dump
+PlantArchitecture/results/figures/
+# curated sample images committed under each stage's examples/ are NOT ignored

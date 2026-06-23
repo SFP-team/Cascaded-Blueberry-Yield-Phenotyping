@@ -1,0 +1,9 @@
+# never commit: the venv, the dataset, training runs, weights, or secrets
+.venv-yolo/
+datasets/
+runs/
+*.pt
+*.onnx
+.env
+__pycache__/
+*.pyc

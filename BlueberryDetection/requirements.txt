@@ -1,0 +1,5 @@
+# Blueberry ripe/unripe YOLO detector — install into the dedicated .venv-yolo
+# (kept separate from ../.venv-sam3 so it can't disturb that env's numpy<2 / SAM3 torch pins).
+ultralytics>=8.3.0      # YOLO11 / YOLO26 training + inference framework
+roboflow>=1.1.0         # dataset download
+# torch / torchvision / opencv-python / numpy are pulled in transitively by ultralytics.

@@ -90,6 +90,15 @@ def erase_disk(mask: np.ndarray, x: int, y: int, radius: int) -> np.ndarray:
     return out.astype(bool)
 
 
+def paint_disk(mask: np.ndarray, x: int, y: int, radius: int) -> np.ndarray:
+    """Add (paint) a filled disk of `radius` px centered at (x, y) — the inverse of
+    `erase_disk`, for completing the mask where the pipeline missed part of the
+    center plant. Returns a new mask."""
+    out = mask.astype(np.uint8).copy()
+    cv2.circle(out, (int(x), int(y)), max(1, int(radius)), 1, -1)
+    return out.astype(bool)
+
+
 def open_separate(mask: np.ndarray, seed_xy, radius: int) -> np.ndarray:
     """Morphological opening that severs thin bridges then keeps the seed-connected
     component, restored to its original extent. Snaps apart background plants that

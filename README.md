@@ -1,13 +1,48 @@
 # BlueberryPlant-Segmentation
 
-Segment the **center blueberry plant** in rover field images using **Meta's Segment Anything
-Model 3 (SAM 3)**, producing one clean pixel mask per image. A rover drives down blueberry rows
-and photographs one target plant per frame, but neighbour and background plants share the frame.
-This pipeline isolates *only* the center plant, so a later step (e.g. a YOLO berry detector) can
-be run **inside** that mask to attribute berries to the correct plant.
+End-to-end blueberry-plant phenotyping from rover field images, organized in **three independent
+stages**, each in its own folder with its own results:
 
-> Plant **segmentation only** — berry detection/counting is intentionally a separate, downstream
-> step and is not part of this repo.
+| Folder | Stage | What it does | Env |
+|---|---|---|---|
+| **[Segmentation/](Segmentation/)** | 1 · segment | SAM 3 isolates the **center plant** → one clean mask per image | `.venv-sam3` (root) |
+| **[PlantArchitecture/](PlantArchitecture/)** | 2 · phenotype | **81 architecture traits**/plant from the stage-1 masks | `.venv-sam3` (root) |
+| **[BlueberryDetection/](BlueberryDetection/)** | 3 · detect | **YOLO26** detects/counts immature & mature berries + flowers (SAHI-tiled) | `BlueberryDetection/.venv-yolo` |
+
+`.venv-sam3/` (Python 3.12) is shared by stages 1–2; detection has its own Python 3.13 venv.
+
+## Quickstart
+
+```bash
+# 1 · Segmentation  (run from Segmentation/; the venv is one level up)
+cd Segmentation && ../.venv-sam3/bin/python -m SAM3_new.cli segment <input_dir> results --device cpu
+#     mask-review UI: double-click  Segmentation/Launch Mask Review.command
+
+# 2 · Plant architecture  (reads stage-1 masks, writes traits into PlantArchitecture/results)
+.venv-sam3/bin/python PlantArchitecture/architecture.py Segmentation/results --out-dir PlantArchitecture/results
+
+# 3 · Berry/flower detection  (SAHI-tiled inference with the trained model)
+BlueberryDetection/.venv-yolo/bin/python BlueberryDetection/predict_sahi.py \
+    --weights BlueberryDetection/weights/fb_merged_v3_best.pt --source <images> --out BlueberryDetection/runs/pred
+```
+
+## Example results
+
+| Stage 1 — Segmentation | Stage 2 — Architecture | Stage 3 — Detection |
+|:--:|:--:|:--:|
+| ![](Segmentation/examples/W24160907.jpg) | ![](PlantArchitecture/examples/W24160907.png) | ![](BlueberryDetection/examples/detection_flowering_bush.jpg) |
+| center-plant mask overlay | per-plant trait figure | berry/flower boxes — v3 model (mAP@50 0.835) |
+
+A few more samples live in each stage's `examples/` folder. Full datasets, model weights, and bulk
+outputs are kept out of git.
+
+---
+
+**The rest of this README documents Stage 1 (Segmentation) in detail.** The commands below are run
+from inside the **`Segmentation/`** folder, where the package is `SAM3_new/` and the venv is
+**`../.venv-sam3`**.
+
+> Stage 1 is plant **segmentation only**; berry detection (stage 3) consumes these masks downstream.
 
 ## Sample outputs
 
@@ -124,12 +159,19 @@ the review page in your browser automatically (nothing leaves the machine — it
 ```
 
 A sidebar lists every image with a status dot (🟢 saved / 🔴 not yet reviewed) and a thumbnail.
-Pick an image, then:
+Pick an image, then **remove, add, or complete** the mask:
 
 - **Click-delete** (default) — click a stray green blob to remove that connected component.
-- **Brush** — drag over a background plant that is *merged* into the center plant (use the size
+- **Erase** brush — drag over a background plant that is *merged* into the center plant (size
   slider, or `[` / `]`).
-- **Keep seed** keeps only the stem plant; **Snap-separate** severs thin bridges.
+- **Add** brush — drag to *paint* mask onto a region the pipeline missed (the inverse of Erase).
+- **Smart-add** — click (or drag a box on) a missed region and **SAM 3 segments it** and unions it
+  into the mask. The model loads **lazily on first use only**, so erase/paint stay fast and
+  model-free; the first click also builds the model (a few seconds on CPU, instant on a GPU box).
+- **Keep seed** keeps only the stem plant; **Snap-separate** severs thin bridges; **Fill holes**
+  closes interior gaps.
+- **Zoom & pan** (`+` / `−` / Fit, ⌘/Ctrl-scroll or trackpad pinch; two-finger / middle-drag to pan)
+  for pixel-precise work; an **opacity** slider and hold-**Space** to **peek** the photo underneath.
 - **Undo** / **Reset**, then **Save**. **Next** moves on.
 
 **Save replaces the originals in place.** It overwrites `masks/<stem>.mask.npy` and regenerates the
@@ -139,8 +181,12 @@ using the same renderers as the pipeline. The output looks exactly as if the pip
 the corrected mask; no separate copy is kept. (It overwrites in place — there is no backup of the
 pre-edit mask, so the in-session Undo/Reset are your safety net before Save.)
 
-Keyboard shortcuts mirror the buttons: `c`/`b` mode, `k` keep-seed, `o` snap-separate, `u` undo,
-`r` reset, `s` save, `n` next.
+Keyboard shortcuts mirror the buttons: `c` click-delete, `e` erase, `a` add, `g` smart-add;
+`k` keep-seed, `o` snap-separate, `f` fill-holes; `[` / `]` brush size; `+` / `−` / `0` zoom;
+hold `Space` to peek; `u` undo, `r` reset, `s` save, `n` next.
+
+By default smart-add runs SAM on the CPU; pass `--device cuda` (or `mps`) to
+`SAM3_new.review_app` on a machine with a GPU for near-instant adds.
 
 ### Matplotlib editor (terminal)
 
