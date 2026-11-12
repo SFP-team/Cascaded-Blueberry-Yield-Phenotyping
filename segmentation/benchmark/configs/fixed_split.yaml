@@ -1,0 +1,79 @@
+# Fixed image-level train/validation protocol used for the paper.
+#
+# Relative paths are resolved against segmentation/benchmark (the folder above
+# configs/). Environment variables are expanded, for example
+#   dataset: ${BLUEBERRY_SEG_DATA}/train_val_source
+#
+# dataset   root of the annotated training/validation photographs, laid out as
+#           <session>/<cohort>/raw/<stem>.jpg
+#           <session>/<cohort>/results/mask_pngs/<stem>.mask.png
+#           <session>/<cohort>/results/masks/<stem>.meta.json (+ <stem>.mask.npy)
+#           (the output tree of segmentation.sam3_annotation after manual review)
+# manifest  CSV written by scripts/build_fixed_split_manifest.py
+# artifacts derived inputs (YOLO26 upright JPEGs and class-map PNGs)
+# runs      checkpoints, thresholds and predictions: runs/<model>/finetuned/fixed_split/
+seed: 2026
+
+paths:
+  dataset: data/train_val_source
+  manifest: data/manifests/train_val_manifest.csv
+  artifacts: outputs/artifacts
+  runs: outputs/runs
+
+data:
+  split_mode: fixed
+  # Repeated weekly photographs are independent rows; their manifest stems
+  # carry the session and cohort so outputs cannot collide.
+  folds: 1
+  height: 1536
+  width: 1024
+  num_workers: 8
+
+training:
+  epochs: 80
+  early_stopping_patience: 12
+  gradient_accumulation: 2
+  amp: true
+  resume: true
+  weight_decay: 0.01
+  loss_bce_weight: 0.5
+  loss_dice_weight: 0.5
+
+models:
+  sam21:
+    pretrained_id: facebook/sam2.1-hiera-large
+    batch_size: 1
+    learning_rate: 0.00002
+    epochs: 30
+    gradient_accumulation: 4
+    train_scope: mask_decoder
+  birefnet_hr:
+    pretrained_id: ZhengPeng7/BiRefNet_HR
+    batch_size: 1
+    learning_rate: 0.00001
+    epochs: 40
+    # Full-resolution BiRefNet-HR nearly fills a 24 GiB GPU, so the optimizer
+    # steps after every image.
+    gradient_accumulation: 1
+    train_scope: all
+  segformer_b2:
+    pretrained_id: nvidia/segformer-b2-finetuned-ade-512-512
+    batch_size: 2
+    learning_rate: 0.00006
+  deeplabv3plus_r50:
+    encoder_name: resnet50
+    encoder_weights: imagenet
+    batch_size: 2
+    learning_rate: 0.0001
+  yolo26:
+    pretrained_id: yolo26m-sem.pt
+    image_size: 1024
+    batch_size: 2
+    optimizer: AdamW
+    learning_rate: 0.001
+    epochs: 80
+    patience: 12
+
+evaluation:
+  # Probability thresholds searched on the validation split (pooled-pixel Dice).
+  threshold_candidates: [0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80]

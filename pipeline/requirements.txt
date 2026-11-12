@@ -1,0 +1,19 @@
+# End-to-end inference. Tested with Python 3.10 and the versions in the comments.
+# Install torch and torchvision from the PyTorch index that matches your CUDA, e.g.
+#   pip install torch==2.6.0 torchvision==0.21.0 --index-url https://download.pytorch.org/whl/cu124
+torch              # 2.6.0+cu124
+torchvision        # 0.21.0+cu124
+transformers       # 5.14.1
+# Imported by the BiRefNet_HR model code that transformers downloads from Hugging Face:
+timm               # 1.0.28
+kornia             # 0.8.2
+einops             # 0.8.2
+ultralytics        # 8.4.104
+sahi>=0.12,<0.13   # 0.12.5
+numpy              # 2.2.6
+pandas             # 2.3.3
+openpyxl           # 3.1.5
+Pillow             # 12.2.0
+opencv-python      # 5.0.0.93
+PyYAML             # 6.0.3
+-r ../traits/requirements.txt

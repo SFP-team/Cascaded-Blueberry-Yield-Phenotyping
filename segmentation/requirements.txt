@@ -1,0 +1,3 @@
+# Segmentation benchmark environment. The SAM3 annotation tool uses its own
+# environment: see sam3_annotation/requirements.txt and sam3_annotation/README.md.
+-r benchmark/requirements.txt

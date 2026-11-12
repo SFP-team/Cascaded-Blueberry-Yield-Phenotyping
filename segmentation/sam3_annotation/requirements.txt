@@ -1,0 +1,11 @@
+# SAM3 annotation and mask-review tool.
+# Install Meta's SAM 3 first, in the same environment (it brings torch):
+#   git clone https://github.com/facebookresearch/sam3.git
+#   pip install -e ./sam3
+# Known to work: numpy 1.26.4, Pillow 12.2.0, fastapi 0.139.2, uvicorn 0.51.0.
+numpy>=1.26,<2
+opencv-python>=4.8,<4.12
+Pillow>=10
+matplotlib>=3.8
+fastapi>=0.110
+uvicorn>=0.29

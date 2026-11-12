@@ -1,0 +1,26 @@
+# Settings used for the paper's inference runs.
+# Relative weight paths resolve against the repository root.
+
+segmentation:
+  fold: 0                     # must match the "fold" stored in both BiRefNet checkpoints
+  height: 1536
+  width: 1024
+  pretrained_id: ZhengPeng7/BiRefNet_HR
+  operating_point: balanced   # key in threshold.json: balanced (validation Dice) or center_strict (validation F-beta)
+  base_weights: weights/birefnet_hr.pt
+  center_weights: weights/center_birefnet.pt
+  threshold_file: weights/threshold.json
+
+detection:
+  weights: weights/blueberry_yolo26l.pt
+  slice: 640                  # SAHI slice size and YOLO input size (px)
+  overlap: 0.2
+  infer_confidence: 0.25      # detections kept in predictions/*.json
+  count_confidence: 0.35      # detections counted in the workbook
+  max_det: 3000
+  batch_size: 8
+
+classes:
+  0: immature_berry
+  1: mature_berry
+  2: flowers

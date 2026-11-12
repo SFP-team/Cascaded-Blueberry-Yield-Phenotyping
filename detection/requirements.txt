@@ -1,0 +1,7 @@
+# Python 3.10. Install the CUDA build of torch that matches your driver first (tested: torch 2.6.0+cu124).
+torch==2.6.0
+ultralytics==8.4.104
+numpy
+Pillow
+# Only for `evaluate.py score --check`
+pycocotools

@@ -1,0 +1,4 @@
+stem,image_name,week,year_class,unripe,ripe,flowers,total_berries,total_detections,image_height,image_width,mask_foreground_pixels,runtime_seconds,status
+example_01,example_01.jpg,,,526,12,3,538,541,5184,3456,5063364,0.8709,complete
+example_02,example_02.jpg,,,662,1,1,663,664,5184,3456,9690391,0.678,complete
+example_03,example_03.jpg,,,870,8,0,878,878,5184,3456,7713538,0.8386,complete

@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Weights, data and run outputs stay outside git
+weights/
+data/
+results/
+runs/
+evals/
+*.pt
+*.pth
+*.safetensors
+*.onnx
+*.ckpt
+
+# Default output folders used in the folder READMEs
+segmentation/benchmark/outputs/
+analysis/out/
+analysis/example_output/
+analysis_outputs/
+
+# R
+.Rhistory
+.RData
+.Rproj.user/
+
+# OS and editors
+.DS_Store
+.idea/
+.vscode/
