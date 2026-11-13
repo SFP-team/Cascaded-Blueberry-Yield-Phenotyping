@@ -1,4 +1,4 @@
-# Python packages imported by analysis/python and analysis/example_data.
+# Python packages imported by analysis/python.
 # Versions known to work: Python 3.10 on a CUDA 12.4 GPU server.
 # extract_traits.py also needs ../traits/requirements.txt, time_center_birefnet_masks.py
 # needs ../pipeline/requirements.txt, and time_sam3_masks.py needs the SAM3 install described in

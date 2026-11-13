@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Correlate berry counts and phenotypes of each model mask with the Manual Mask.
 
-Input is the harvest table (see build_harvest_table.py and ../example_data). For every model
+Input is the harvest table (see build_harvest_table.py and ../../validation_data). For every model
 mask and every variable (total_detection and the 19 phenotypes), plants are paired on
 ``Image Name`` with the Manual Mask row and the Pearson correlation r, MAE and RMSE are computed.
 

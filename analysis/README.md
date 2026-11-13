@@ -9,8 +9,8 @@ This folder holds the code for the downstream analyses of the paper. It covers:
 5. Prediction of the hand-harvested berry count with Ridge regression and PLSR (R).
 6. The timing experiment for automatic and manually corrected masks.
 
-No weights, images, masks or field data ship with this folder. The files in `example_data/`
-are synthetic.
+No weights, images or masks ship with this folder. The paper's hand-harvest data (the harvest
+table, the ground truth and a link to the photos) is in [`../validation_data`](../validation_data).
 
 ## Layout
 
@@ -26,7 +26,6 @@ analysis/
   python/time_sam3_masks.py        timing of automatic SAM3 masks
   python/time_center_birefnet_masks.py  timing of automatic Center BiRefNet masks
   python/plot_annotation_times.py  timing figures
-  example_data/                    synthetic inputs and the script that wrote them
   requirements.txt
 ```
 
@@ -80,7 +79,7 @@ models in `../segmentation`.
 
 **Hand-harvest ground truth.** A CSV with the columns
 `Image Name, Genotype_gt, Immature_gt, Mature_gt, Observed_Total`. `Image Name` equals the
-manifest `stem`.
+manifest `stem`. The paper's file is `../validation_data/ground_truth.csv`.
 
 ## Steps
 
@@ -207,16 +206,15 @@ python plot_annotation_times.py --manual-times manual_times.csv \
   `manual_seconds` (drawing the mask by hand), `sam3_corrected_seconds` and
   `center_birefnet_corrected_seconds` (correcting the automatic mask by hand).
 
-## Synthetic example
+## Paper data
 
-`example_data/synthetic_harvest_table.csv` has the schema of the real harvest table: 8 masks
-× 60 synthetic plants from 32 synthetic genotypes. `example_data/synthetic_ground_truth.csv`
-has the ground-truth schema. `example_data/make_synthetic_data.py --seed 2026` wrote both files
-from random draws. The values mean nothing biologically.
+[`../validation_data`](../validation_data) holds the harvest table and the ground truth of the
+paper: 59 plants of 32 genotypes, 8 mask conditions. Its README describes the columns and how to
+download the 59 photos.
 
 ```
-Rscript R/harvest_prediction.R --data example_data/synthetic_harvest_table.csv --out-dir example_output
-python python/phenotype_agreement.py --table example_data/synthetic_harvest_table.csv --out-dir example_output
+Rscript R/harvest_prediction.R --data ../validation_data/harvest_table.csv --out-dir out/harvest_prediction
+python python/phenotype_agreement.py --table ../validation_data/harvest_table.csv --out-dir out/agreement
 ```
 
 The R run takes under a minute on a laptop.

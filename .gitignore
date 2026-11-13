@@ -20,10 +20,13 @@ evals/
 *.onnx
 *.ckpt
 
+# The validation photos are a release download, not part of git
+validation_data/images/
+validation_data/*.zip
+
 # Default output folders used in the folder READMEs
 segmentation/benchmark/outputs/
 analysis/out/
-analysis/example_output/
 analysis_outputs/
 
 # R

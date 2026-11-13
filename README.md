@@ -27,6 +27,7 @@ measured:
 | [`pipeline`](pipeline) | end-to-end inference: a folder of photos in, masks, counts, traits and one Excel workbook out |
 | [`analysis`](analysis) | within-mask detection for every mask condition, trait comparison, statistics, timing, and the R harvest-count models |
 | [`examples`](examples) | pipeline outputs on three test photos and one test photo segmented by every model |
+| [`validation_data`](validation_data) | the hand-harvest data of the paper: harvest table, ground truth and a link to the 59 photos |
 
 Each folder has its own README with the data layout it expects, the commands in order, and its outputs.
 
@@ -79,9 +80,9 @@ Trained weights are not distributed. The pipeline reads them from `weights/` at 
 | `weights/threshold.json` | Center BiRefNet prediction on the validation set in [`segmentation/benchmark`](segmentation/benchmark) |
 | `weights/blueberry_yolo26l.pt` | [`detection/train.py`](detection/train.py) |
 
-The field photos, annotations and hand-harvest records are not public. [`examples`](examples) shows pipeline
-outputs on three test photos, and [`analysis/example_data`](analysis/example_data) holds synthetic tables with the
-same columns as the real ones so that the analysis scripts can be run end to end.
+[`validation_data`](validation_data) holds the hand-harvest data of the paper: the counts of 59 hand-harvested plants
+(32 genotypes), the table the harvest-count models were fitted on, and a download of the 59 photos. The other field
+photos and the annotations are not public. [`examples`](examples) shows pipeline outputs on three test photos.
 
 ## Examples
 
