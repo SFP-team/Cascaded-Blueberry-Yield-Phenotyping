@@ -1338,5 +1338,3 @@ write_table(full_predictions, "full_predictions.csv")
 write_table(full_fit_performance, "full_fit_performance.csv")
 write_table(final_tuning, "final_tuning.csv")
 write_table(performance_table, "performance_table.csv")
-
-cat("Wrote", out_dir, "\n")
