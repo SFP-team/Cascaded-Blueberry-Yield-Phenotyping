@@ -6,7 +6,7 @@ measured:
 
 1. **Target-plant segmentation.** A mask of the plant in the centre of the photo, separated from neighbouring bushes,
    sky and ground. SAM3 drafts the training masks, people correct them, and supervised models learn from the
-   corrected set. The deployed pipeline uses Center BiRefNet.
+   corrected set. 
 2. **Berry and flower detection.** A YOLO26-L detector finds immature berries, mature berries and flowers on
    640 px slices of the full-resolution photo. A detection is counted only when the centre of its box lies inside
    the target-plant mask.
