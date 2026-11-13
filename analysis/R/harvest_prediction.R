@@ -32,7 +32,6 @@ suppressPackageStartupMessages({
   library(scales)
 })
 
-
 #===============================================================================
 # 0. ARGUMENTS
 #===============================================================================
@@ -604,7 +603,6 @@ plsr_logo <- function(data, predictors) {
   bind_rows(predictions)
 }
 
-
 #===============================================================================
 # 4. RUN LOGO VALIDATION FOR ALL SEGMENTATION MODELS
 #===============================================================================
@@ -649,7 +647,6 @@ logo_predictions <- logo_predictions %>%
       )
     )
   )
-
 
 #===============================================================================
 # 5. FUNCTION TO CALCULATE PREDICTION PERFORMANCE
@@ -738,7 +735,6 @@ calculate_performance <- function(predictions) {
     ungroup()
 }
 
-
 #===============================================================================
 # 6. LOGO PREDICTIVE PERFORMANCE
 #===============================================================================
@@ -746,8 +742,6 @@ calculate_performance <- function(predictions) {
 logo_performance <- calculate_performance(
   logo_predictions
 )
-
-
 
 #===============================================================================
 # 7. DIRECT RIDGE VS PLSR COMPARISON
@@ -786,8 +780,6 @@ method_comparison <- logo_performance %>%
       TRUE ~ "Equal"
     )
   )
-
-
 
 #===============================================================================
 # 8. FIT FINAL RIDGE AND PLSR MODELS USING THE COMPLETE DATASET
@@ -1029,7 +1021,6 @@ full_model_fits <- setNames(
   model_order
 )
 
-
 #===============================================================================
 # 10. EXTRACT FINAL HYPERPARAMETERS
 #===============================================================================
@@ -1044,8 +1035,6 @@ final_tuning <- map_dfr(
       levels = model_order
     )
   )
-
-
 
 #===============================================================================
 # 11. EXTRACT FULL-DATA FITTED VALUES
@@ -1068,7 +1057,6 @@ full_predictions <- map_dfr(
       )
     )
   )
-
 
 #===============================================================================
 # 12. FULL-DATA APPARENT PERFORMANCE
@@ -1140,8 +1128,6 @@ performance_table <- logo_performance %>%
     Predictors_used
   )
 
-
-
 #===============================================================================
 # 14. PREPARE LOGO STATISTICS FOR PLOTS
 #===============================================================================
@@ -1164,7 +1150,6 @@ plot_limits <- range(
   ),
   na.rm = TRUE
 )
-
 
 #===============================================================================
 # 15. FUNCTION FOR MANUSCRIPT-QUALITY LOGO PLOTS
@@ -1287,7 +1272,6 @@ plot_logo_predictions <- function(
   p
 }
 
-
 #===============================================================================
 # 16. CREATE RIDGE AND PLSR LOGO FIGURES
 #===============================================================================
@@ -1303,7 +1287,6 @@ p_plsr_logo <- plot_logo_predictions(
   statistics_data = plot_statistics,
   method_name = "PLSR"
 )
-
 
 ggsave(
   file.path(out_dir, "logo_ridge.png"),
